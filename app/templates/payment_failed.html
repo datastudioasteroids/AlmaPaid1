@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Pago Fallido</title>
+</head>
+<body>
+  <h1>Pago no completado</h1>
+  <p>Hubo un problema con el pago o la referencia es inválida.</p>
+  {% if error %}
+    <p style="color:red">{{ error }}</p>
+  {% endif %}
+  <a href="/">Volver al inicio</a>
+</body>
+</html>

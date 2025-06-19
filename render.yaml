@@ -1,0 +1,12 @@
+# render.yaml
+
+services:
+  - type: web
+    name: alma-paid
+    env: python
+    plan: starter
+    buildCommand: pip install -r requirements.txt
+    # Primero corremos migraciones, luego arrancamos Uvicorn
+    startCommand: >
+      python migrate.py &&
+      uvicorn app.main:app --host 0.0.0.0 --port $PORT

@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>AlmaPaid – Pago de Talleres</title>
+  <link rel="stylesheet" href="/static/styles.css" />
+</head>
+<body>
+  <!-- Header con logo y título -->
+  <div class="header">
+    <img src="/static/logo.png" alt="AlmaPaid Logo" />
+    <h1>AlmaPaid – Pago de Talleres</h1>
+  </div>
+
+  <!-- Barra de navegación secundaria -->
+  <nav class="admin-nav">
+    <span>Bienvenido</span> |
+    <a href="/login">Solo para administradores</a>
+  </nav>
+
+  <!-- Contenedor principal estilo “tarjeta” -->
+  <div class="container">
+    <form method="post" action="/create_preference" class="search-form">
+      <h2>Buscá tu inscripción</h2>
+      <label for="term">Por nombre, DNI, email o estado:</label>
+      <input
+        type="text"
+        id="term"
+        name="term"
+        value="{{ term|default('') }}"
+        placeholder="Ej. Juan Pérez, 12345678, correo@ejemplo.com"
+        required
+      />
+      <button type="submit">Continuar a pago</button>
+    </form>
+
+    {% if error %}
+      <p class="error-message">{{ error }}</p>
+    {% endif %}
+    {% if error_mp %}
+      <p class="error-message">
+        Error de Mercado Pago:<br>
+        <pre>{{ error_mp | tojson(indent=2) }}</pre>
+      </p>
+    {% endif %}
+    {% if multiple %}
+      <div class="multiple-results">
+        <h3>Se encontraron varias coincidencias:</h3>
+        <ul>
+          {% for s in multiple %}
+            <li>
+              <strong>{{ s.name }}</strong>
+              {% if s.dni %}(DNI: {{ s.dni }}){% endif %}
+              {% if s.email %} – Email: {{ s.email }}{% endif %}
+              {% if s.status %} – Estado: {{ s.status }}{% endif %}
+            </li>
+          {% endfor %}
+        </ul>
+        <p>Por favor, probá nuevamente con datos más precisos.</p>
+      </div>
+    {% endif %}
+  </div>
+</body>
+</html>
+

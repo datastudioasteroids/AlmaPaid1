@@ -1,0 +1,30 @@
+<!-- app/templates/admin/base.html -->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <title>{% block title %}AlmaPaid Admin{% endblock %}</title>
+    <link rel="stylesheet" href="/static/styles.css" />
+</head>
+<body>
+    <div class="back-buttons">
+        <!-- Volver al Home -->
+        <a href="/"><button type="button">← Volver al Home</button></a>
+        <!-- Volver al Dashboard -->
+        <a href="/admin"><button type="button">← Volver al Dashboard</button></a>
+    </div>
+
+    <nav>
+        <a href="/admin">Dashboard</a> |
+        <a href="/admin/students">Estudiantes</a> |
+        <a href="/admin/courses">Cursos</a> |
+        <a href="/admin/enrollments">Inscripciones</a> |
+        <a href="/admin/invoices">Facturación</a> |
+        <a href="/logout">Cerrar sesión</a>
+    </nav>
+    <hr>
+    <div class="container">
+        {% block content %}{% endblock %}
+    </div>
+</body>
+</html>

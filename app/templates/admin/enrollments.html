@@ -1,0 +1,79 @@
+<!-- app/templates/admin/enrollments.html -->
+{% extends 'admin/base.html' %}
+
+{% block title %}Gestión de Inscripciones{% endblock %}
+
+{% block content %}
+<h2>Inscripciones</h2>
+
+<!-- Tabla de inscripciones existentes -->
+<table border="1" cellpadding="5" cellspacing="0">
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Estudiante</th>
+      <th>Curso</th>
+      <th>Estado</th>
+      <th>Acciones</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for e in enrollments %}
+      <tr>
+        <td>{{ e.id }}</td>
+        <td>{{ e.student.name }}</td>
+        <td>{{ e.course.title }}</td>
+        <td>{{ e.status }}</td>
+        <td>
+          <!-- Botón para eliminar -->
+          <a href="/admin/enrollments/delete/{{ e.id }}" 
+             onclick="return confirm('¿Eliminar inscripción de {{ e.student.name }} en {{ e.course.title }}?');">
+            <button>🗑 Eliminar</button>
+          </a>
+        </td>
+      </tr>
+    {% endfor %}
+    {% if enrollments|length == 0 %}
+      <tr>
+        <td colspan="5">No hay inscripciones registradas.</td>
+      </tr>
+    {% endif %}
+  </tbody>
+</table>
+
+<hr>
+
+<!-- Formulario para crear nueva inscripción -->
+<h3>Agregar Nueva Inscripción</h3>
+<form method="post" action="/admin/enrollments">
+  <label>
+    Estudiante:<br>
+    <select name="student_id" required>
+      <option value="" disabled selected>-- Seleccionar Estudiante --</option>
+      {% for s in students %}
+        <option value="{{ s.id }}">{{ s.name }}{% if s.dni %} (DNI: {{ s.dni }}){% endif %}</option>
+      {% endfor %}
+    </select>
+  </label>
+  <br><br>
+
+  <label>
+    Curso:<br>
+    <select name="course_id" required>
+      <option value="" disabled selected>-- Seleccionar Curso --</option>
+      {% for c in courses %}
+        <option value="{{ c.id }}">{{ c.title }}</option>
+      {% endfor %}
+    </select>
+  </label>
+  <br><br>
+
+  <label>
+    Estado:<br>
+    <input type="text" name="status" value="activo" required />
+  </label>
+  <br><br>
+
+  <button type="submit">Guardar Inscripción</button>
+</form>
+{% endblock %}

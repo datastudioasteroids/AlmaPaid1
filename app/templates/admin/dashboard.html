@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Admin – Dashboard</title>
+  <link rel="stylesheet" href="/static/styles.css" />
+</head>
+<body>
+  <div class="header">
+    <img src="/static/logo.png" alt="AlmaPaid Logo" />
+    <h1>Panel de Administración</h1>
+  </div>
+
+  <nav class="admin-nav">
+    <a href="/admin">Dashboard</a> |
+    <a href="/admin/students">Estudiantes</a> |
+    <a href="/admin/courses">Cursos</a> |
+    <a href="/admin/enrollments">Inscripciones</a> |
+    <a href="/admin/invoices">Facturación</a> |
+    <a href="/logout">Cerrar sesión</a>
+  </nav>
+
+  <div class="container">
+    <p>Total de estudiantes: {{ total_students }}</p>
+    <p>Total de cursos: {{ total_courses }}</p>
+
+    <div class="dashboard-filter">
+      <label for="courseSelect">Filtrar por taller:</label>
+      <select id="courseSelect">
+        <option value="">Todos</option>
+        {% for c in courses %}
+          <option value="{{ c.id }}">{{ c.title }}</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <canvas id="paymentsChart" width="600" height="300"></canvas>
+
+    <nav class="back-buttons">
+      <a href="/"><button>← Volver al Home</button></a>
+      <a href="/admin"><button>← Volver al Dashboard</button></a>
+    </nav>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script>
+    const ctx = document.getElementById('paymentsChart').getContext('2d');
+    let chart;
+    async function loadChart(courseId) {
+      let url = '/admin/api/payments-summary';
+      if (courseId) url += '?course_id=' + courseId;
+      const { paid, unpaid } = await (await fetch(url)).json();
+      const data = {
+        labels: ['Pagados', 'No pagados'],
+        datasets: [{ label: 'Estudiantes', data: [paid, unpaid] }]
+      };
+      if (chart) {
+        chart.data = data;
+        chart.update();
+      } else {
+        chart = new Chart(ctx, {
+          type: 'bar',
+          data,
+          options: { responsive: true }
+        });
+      }
+    }
+    document.getElementById('courseSelect')
+      .addEventListener('change', e => loadChart(e.target.value));
+    loadChart(null);
+  </script>
+</body>
+</html>

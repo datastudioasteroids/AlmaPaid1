@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Admin – Estudiantes</title>
+  <link rel="stylesheet" href="/static/styles.css" />
+</head>
+<body>
+  <div class="header">
+    <img src="/static/logo.png" alt="AlmaPaid Logo" />
+    <h1>Gestión de Estudiantes</h1>
+  </div>
+
+  <nav class="admin-nav">
+    <a href="/admin">Dashboard</a> |
+    <a href="/admin/students">Estudiantes</a> |
+    <a href="/admin/courses">Cursos</a> |
+    <a href="/admin/enrollments">Inscripciones</a> |
+    <a href="/admin/invoices">Facturación</a> |
+    <a href="/logout">Cerrar sesión</a>
+  </nav>
+
+  <div class="container">
+    <form id="studentFilter" class="filter-form">
+      <input  type="text"    id="filterName"   placeholder="Nombre…" />
+      <select id="filterCourse">
+        <option value="">Todos los talleres</option>
+        {% for c in courses %}
+          <option value="{{ c.id }}">{{ c.title }}</option>
+        {% endfor %}
+      </select>
+      <select id="filterPaid">
+        <option value="">Todos</option>
+        <option value="true">Pagado</option>
+        <option value="false">No pagado</option>
+      </select>
+      <button type="submit">Buscar</button>
+    </form>
+
+    <table id="studentsTable">
+      <thead>
+        <tr>
+          <th>Nombre</th><th>Email</th><th>Pagó</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+
+    <div id="studentDetail" class="modal" style="display:none;">
+      <div class="modal-content">
+        <span id="closeDetail" class="close">&times;</span>
+        <div id="detailContent"></div>
+      </div>
+    </div>
+
+    <nav class="back-buttons">
+      <a href="/admin"><button>← Volver al Dashboard</button></a>
+      <a href="/"><button>← Volver al Home</button></a>
+    </nav>
+  </div>
+
+  <script>
+    async function loadStudents() {
+      const name   = document.getElementById('filterName').value;
+      const course = document.getElementById('filterCourse').value;
+      const paid   = document.getElementById('filterPaid').value;
+      let url = '/admin/api/students?';
+      if (name)   url += 'name='   + encodeURIComponent(name)   + '&';
+      if (course) url += 'course_id=' + course + '&';
+      if (paid)   url += 'paid='   + paid;
+      const list = await (await fetch(url)).json();
+      const tbody = document.querySelector('#studentsTable tbody');
+      tbody.innerHTML = '';
+      list.forEach(s => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${s.name}</td>
+          <td>${s.email || '-'}</td>
+          <td>${s.last_paid_date ? '✅' : '❌'}</td>
+        `;
+        tr.addEventListener('click', () => showDetail(s));
+        tbody.appendChild(tr);
+      });
+    }
+
+    document.getElementById('studentFilter')
+      .addEventListener('submit', e => { e.preventDefault(); loadStudents(); });
+
+    function showDetail(s) {
+      document.getElementById('detailContent').innerHTML = `
+        <h2>${s.name}</h2>
+        <p><strong>Email:</strong> ${s.email}</p>
+        <p><strong>DNI:</strong> ${s.dni}</p>
+        <p><strong>Estado:</strong> ${s.status}</p>
+        <p><strong>Último pago:</strong> ${s.last_paid_date || '—'}</p>
+      `;
+      document.getElementById('studentDetail').style.display = 'flex';
+    }
+
+    document.getElementById('closeDetail')
+      .addEventListener('click', () => document.getElementById('studentDetail').style.display = 'none');
+
+    loadStudents();
+  </script>
+</body>
+</html>

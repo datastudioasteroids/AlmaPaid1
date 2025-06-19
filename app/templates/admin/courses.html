@@ -1,0 +1,66 @@
+<!-- app/templates/admin/courses.html -->
+{% extends 'admin/base.html' %}
+{% block title %}Gestión de Cursos{% endblock %}
+
+{% block content %}
+<h2>Cursos</h2>
+
+<table border="1" cellpadding="5" cellspacing="0">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Título</th>
+            <th>Mensualidad</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for c in courses %}
+        <tr>
+            <td>{{ c.id }}</td>
+            <td>{{ c.title }}</td>
+            <td>$ {{ '%.2f' | format(c.monthly_fee) }}</td>
+            <td>
+                <a href="/admin/courses?edit_id={{ c.id }}">
+                  <button>✏ Editar</button>
+                </a>
+                <a href="/admin/courses/delete/{{ c.id }}" 
+                   onclick="return confirm('¿Eliminar curso {{ c.title }}?');">
+                  <button>🗑 Eliminar</button>
+                </a>
+            </td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+<hr>
+
+{% if course_to_edit %}
+    <h3>Editar Curso (ID {{ course_to_edit.id }})</h3>
+{% else %}
+    <h3>Agregar Nuevo Curso</h3>
+{% endif %}
+
+<form method="post" action="/admin/courses">
+    <input type="hidden" name="id" value="{{ course_to_edit.id if course_to_edit else '' }}" />
+
+    <label>
+        Título:<br>
+        <input type="text" name="title" value="{{ course_to_edit.title if course_to_edit else '' }}" required />
+    </label><br><br>
+
+    <label>
+        Mensualidad:<br>
+        <input type="number" name="monthly_fee" step="0.01" 
+               value="{{ course_to_edit.monthly_fee if course_to_edit else 15000.0 }}" required />
+    </label><br><br>
+
+    <button type="submit">
+        {% if course_to_edit %}Actualizar Curso{% else %}Guardar Curso{% endif %}
+    </button>
+    {% if course_to_edit %}
+        <a href="/admin/courses"><button type="button">Cancelar</button></a>
+    {% endif %}
+</form>
+{% endblock %}

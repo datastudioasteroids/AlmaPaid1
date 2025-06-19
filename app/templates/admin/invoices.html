@@ -1,0 +1,24 @@
+<!-- app/templates/admin/invoices.html -->
+{% extends 'admin/base.html' %}
+{% block title %}Facturación{% endblock %}
+
+{% block content %}
+<h2>Facturación</h2>
+<table>
+    <tr>
+        <th>Estudiante</th><th>Subtotal</th><th>Recargo</th><th>Total</th>
+        <th>Próx Sub</th><th>Próx Rec</th><th>Próx Tot</th>
+    </tr>
+    {% for d in dues_data %}
+    <tr>
+        <td>{{ d.student.name }}</td>
+        <td>${{ '%.2f'|format(d.subtotal) }}</td>
+        <td>${{ '%.2f'|format(d.recargo) }}</td>
+        <td><strong>${{ '%.2f'|format(d.total) }}</strong></td>
+        <td>${{ '%.2f'|format(d.next_sub) }}</td>
+        <td>${{ '%.2f'|format(d.next_rec) }}</td>
+        <td>${{ '%.2f'|format(d.next_total) }}</td>
+    </tr>
+    {% endfor %}
+</table>
+{% endblock %}

@@ -1,0 +1,15 @@
+fastapi
+uvicorn
+jinja2
+mercadopago
+toml
+sqlalchemy
+python-multipart
+psycopg2-binary
+itsdangerous
+
+#Ejemplo mínimo de secrets.toml (en la raíz de tu proyecto, al lado de app/):
+
+#MP_ACCESS_TOKEN = "TU_ACCESS_TOKEN_DE_MERCADOPAGO"
+#CBU_ALIAS       = "TU_ALIAS_CBU_PARA_HOMEBANKING"
+#BASE_URL        = "http://localhost:8000"      # o tu dominio público
