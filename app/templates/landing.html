@@ -20,8 +20,10 @@
 
   <!-- Contenedor principal estilo “tarjeta” -->
   <div class="container">
+    <!-- Formulario de búsqueda -->
     <form method="post" action="/create_preference" class="search-form">
       <h2>Buscá tu inscripción</h2>
+      <input type="hidden" name="action" value="search" />
       <label for="term">Por nombre, DNI, email o estado:</label>
       <input
         type="text"
@@ -31,9 +33,10 @@
         placeholder="Ej. Juan Pérez, 12345678, correo@ejemplo.com"
         required
       />
-      <button type="submit">Continuar a pago</button>
+      <button type="submit">Buscar</button>
     </form>
 
+    <!-- Mensajes de error -->
     {% if error %}
       <p class="error-message">{{ error }}</p>
     {% endif %}
@@ -57,6 +60,25 @@
           {% endfor %}
         </ul>
         <p>Por favor, probá nuevamente con datos más precisos.</p>
+      </div>
+    {% endif %}
+
+    <!-- Resultado de búsqueda y botón de pago -->
+    {% if student %}
+      <div class="result-card">
+        <h3>Inscripción encontrada:</h3>
+        <p><strong>Alumno:</strong> {{ student.name }} {% if student.dni %}(DNI: {{ student.dni }}){% endif %}</p>
+        <p><strong>Email:</strong> {{ student.email or '—' }}</p>
+        <p><strong>Estado:</strong> {{ student.status }}</p>
+        <p><strong>Cursos:</strong> {{ courses | join(', ') }}</p>
+        <p><strong>Subtotal:</strong> ${{ subtotal }}</p>
+        <p><strong>Recargo:</strong> ${{ surcharge }}</p>
+        <p><strong>Total a pagar:</strong> ${{ total }}</p>
+        <form method="post" action="/create_preference" class="pay-form">
+          <input type="hidden" name="action" value="pay" />
+          <input type="hidden" name="student_id" value="{{ student.id }}" />
+          <button type="submit">Pagar con Mercado Pago</button>
+        </form>
       </div>
     {% endif %}
   </div>
