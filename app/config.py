@@ -1,13 +1,21 @@
 # app/config.py
 import os
-import toml
 
-# Intentamos cargar un secrets.toml; si no existe, pasamos a variables de entorno
-try:
-    _conf = toml.load(os.path.join(os.path.dirname(__file__), "..", "secrets.toml"))
-except FileNotFoundError:
-    _conf = {}
+# Directorio base (carpeta raíz del repo)
+BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 
-MP_ACCESS_TOKEN = _conf.get("MP_ACCESS_TOKEN") or os.getenv("MP_ACCESS_TOKEN", "")
-CBU_ALIAS       = _conf.get("CBU_ALIAS")       or os.getenv("CBU_ALIAS", "")
-BASE_URL        = _conf.get("BASE_URL")        or os.getenv("BASE_URL", "http://localhost:8000")
+# Path al archivo sqlite incluido en el repo
+DEFAULT_SQLITE_PATH = os.path.join(BASE_DIR, "alma_paid.db")
+
+# URI: primero intenta leer env var DATABASE_URL (por compatibilidad),
+# si no existe usa la DB sqlite local (archivo en el repo)
+SQLALCHEMY_DATABASE_URI = os.getenv("DATABASE_URL") or f"sqlite:///{DEFAULT_SQLITE_PATH}"
+
+# Opciones recomendadas para SQLite con SQLAlchemy
+# check_same_thread False es necesario si usas threads (gunicorn/uvicorn)
+SQLALCHEMY_TRACK_MODIFICATIONS = False
+SQLALCHEMY_ENGINE_OPTIONS = {"connect_args": {"check_same_thread": False}}
+
+# Otros settings que puedas necesitar
+DEBUG = os.getenv("FLASK_DEBUG", "0") in ("1", "true", "True")
+SECRET_KEY = os.getenv("SECRET_KEY", "cámbiala_por_una_secreta_en_producción")
